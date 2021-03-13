@@ -1,0 +1,378 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a Go Boilerplate for medium sized projects",
+        "title": "Go Boilerplate API",
+        "contact": {
+            "name": "Saidamir Botirov",
+            "url": "https://www.linkedin.com/in/saidamir-botirov-a08559192",
+            "email": "saidamir.botirov@gmail.com"
+        },
+        "license": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/config": {
+            "get": {
+                "description": "shows config of the project only on the development phase",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "gets project config",
+                "operationId": "get-config",
+                "responses": {
+                    "200": {
+                        "description": "desc",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/config.Config"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/ping": {
+            "get": {
+                "description": "this returns \"pong\" messsage to show service is working",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "returns \"pong\" message",
+                "operationId": "ping",
+                "responses": {
+                    "200": {
+                        "description": "desc",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/has-access": {
+            "post": {
+                "description": "has access",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "has access",
+                "operationId": "has-access",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Platform Id",
+                        "name": "platform-id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Access Info",
+                        "name": "access",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.AccessModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/rest.HasAccessModel"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/standard/login": {
+            "post": {
+                "description": "standard login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "standard login",
+                "operationId": "standard-login",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Platform Id",
+                        "name": "platform-id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "credentials",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.StandardLoginModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/rest.TokenModel"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/rest.ResponseModel"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "config.Config": {
+            "type": "object",
+            "properties": {
+                "app": {
+                    "type": "string"
+                },
+                "basePath": {
+                    "type": "string"
+                },
+                "cassandraHost": {
+                    "type": "string"
+                },
+                "cassandraKeyspace": {
+                    "type": "string"
+                },
+                "cassandraPassword": {
+                    "type": "string"
+                },
+                "cassandraPort": {
+                    "type": "integer"
+                },
+                "cassandraUser": {
+                    "type": "string"
+                },
+                "defaultLimit": {
+                    "type": "string"
+                },
+                "defaultOffset": {
+                    "type": "string"
+                },
+                "environment": {
+                    "description": "development, staging, production",
+                    "type": "string"
+                },
+                "httpport": {
+                    "type": "string"
+                },
+                "logLevel": {
+                    "description": "debug, info, warn, error, dpanic, panic, fatal",
+                    "type": "string"
+                },
+                "postgresDatabase": {
+                    "type": "string"
+                },
+                "postgresHost": {
+                    "type": "string"
+                },
+                "postgresPassword": {
+                    "type": "string"
+                },
+                "postgresPort": {
+                    "type": "integer"
+                },
+                "postgresUser": {
+                    "type": "string"
+                },
+                "rabbitURI": {
+                    "type": "string"
+                },
+                "secretKey": {
+                    "type": "string"
+                },
+                "serviceHost": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.AccessModel": {
+            "type": "object",
+            "properties": {
+                "method": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.HasAccessModel": {
+            "type": "object",
+            "properties": {
+                "client_platform_id": {
+                    "type": "string"
+                },
+                "client_type_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.ResponseModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "error": {
+                    "type": "object"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.StandardLoginModel": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.TokenModel": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "refresh_in_seconds": {
+                    "type": "integer"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

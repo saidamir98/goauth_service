@@ -1,0 +1,16 @@
+USE goauth_service;
+
+DROP TABLE IF EXISTS session;
+DROP TABLE IF EXISTS user_key;
+DROP TABLE IF EXISTS user_login;
+DROP TABLE IF EXISTS user_email;
+DROP TABLE IF EXISTS user_phone;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS role_permission;
+DROP TABLE IF EXISTS permission_scope;
+DROP TABLE IF EXISTS permission;
+DROP TABLE IF EXISTS scope;
+DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS client;
+DROP TABLE IF EXISTS client_type;
+DROP TABLE IF EXISTS client_platform;

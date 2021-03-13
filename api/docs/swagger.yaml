@@ -1,0 +1,236 @@
+definitions:
+  config.Config:
+    properties:
+      app:
+        type: string
+      basePath:
+        type: string
+      cassandraHost:
+        type: string
+      cassandraKeyspace:
+        type: string
+      cassandraPassword:
+        type: string
+      cassandraPort:
+        type: integer
+      cassandraUser:
+        type: string
+      defaultLimit:
+        type: string
+      defaultOffset:
+        type: string
+      environment:
+        description: development, staging, production
+        type: string
+      httpport:
+        type: string
+      logLevel:
+        description: debug, info, warn, error, dpanic, panic, fatal
+        type: string
+      postgresDatabase:
+        type: string
+      postgresHost:
+        type: string
+      postgresPassword:
+        type: string
+      postgresPort:
+        type: integer
+      postgresUser:
+        type: string
+      rabbitURI:
+        type: string
+      secretKey:
+        type: string
+      serviceHost:
+        type: string
+    type: object
+  rest.AccessModel:
+    properties:
+      method:
+        type: string
+      token:
+        type: string
+      url:
+        type: string
+    type: object
+  rest.HasAccessModel:
+    properties:
+      client_platform_id:
+        type: string
+      client_type_id:
+        type: string
+      id:
+        type: string
+      role_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  rest.ResponseModel:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      error:
+        type: object
+      message:
+        type: string
+    type: object
+  rest.StandardLoginModel:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  rest.TokenModel:
+    properties:
+      access_token:
+        type: string
+      created_at:
+        type: string
+      expires_at:
+        type: string
+      refresh_in_seconds:
+        type: integer
+      refresh_token:
+        type: string
+      updated_at:
+        type: string
+    type: object
+info:
+  contact:
+    email: saidamir.botirov@gmail.com
+    name: Saidamir Botirov
+    url: https://www.linkedin.com/in/saidamir-botirov-a08559192
+  description: This is a Go Boilerplate for medium sized projects
+  license: {}
+  title: Go Boilerplate API
+  version: "1.0"
+paths:
+  /config:
+    get:
+      consumes:
+      - application/json
+      description: shows config of the project only on the development phase
+      operationId: get-config
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: desc
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/config.Config'
+              type: object
+      summary: gets project config
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: this returns "pong" messsage to show service is working
+      operationId: ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: desc
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: returns "pong" message
+  /v1/auth/has-access:
+    post:
+      consumes:
+      - application/json
+      description: has access
+      operationId: has-access
+      parameters:
+      - description: Platform Id
+        in: header
+        name: platform-id
+        required: true
+        type: string
+      - description: Access Info
+        in: body
+        name: access
+        required: true
+        schema:
+          $ref: '#/definitions/rest.AccessModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/rest.HasAccessModel'
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            $ref: '#/definitions/rest.ResponseModel'
+      summary: has access
+      tags:
+      - auth
+  /v1/auth/standard/login:
+    post:
+      consumes:
+      - application/json
+      description: standard login
+      operationId: standard-login
+      parameters:
+      - description: Platform Id
+        in: header
+        name: platform-id
+        required: true
+        type: string
+      - description: credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/rest.StandardLoginModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/rest.TokenModel'
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            $ref: '#/definitions/rest.ResponseModel'
+      summary: standard login
+      tags:
+      - auth
+swagger: "2.0"
