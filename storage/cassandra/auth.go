@@ -70,13 +70,13 @@ func (r *authRepo) GetUserByID(id string) (res rest.UserModel, err error) {
 }
 
 func (r *authRepo) GetClient(clientPlatformID, clientTypeID string) (res rest.ClientModel, err error) {
-	query := `SELECT
+	stmt := `SELECT
 	client_platform_id,
 	client_type_id
 	FROM client
 	WHERE client_platform_id = ? AND client_type_id = ?`
 
-	if err = r.db.Query(query, clientPlatformID, clientTypeID).Scan(
+	if err = r.db.Query(stmt, clientPlatformID, clientTypeID).Scan(
 		&res.ClientPlatformID,
 		&res.ClientTypeID,
 	); err != nil {
@@ -119,7 +119,7 @@ func (r *authRepo) CreateSession(entity rest.SessionModel) (err error) {
 }
 
 func (r *authRepo) GetSession(clientPlatformID, clientTypeID, userID, id string) (res rest.SessionModel, err error) {
-	query := `SELECT
+	stmt := `SELECT
 	client_platform_id,
 	client_type_id,
 	user_id,
@@ -133,7 +133,7 @@ func (r *authRepo) GetSession(clientPlatformID, clientTypeID, userID, id string)
 	FROM session
 	WHERE client_platform_id = ? AND client_type_id = ? AND user_id = ? AND id = ?`
 
-	if err = r.db.Query(query, clientPlatformID, clientTypeID, userID, id).Scan(
+	if err = r.db.Query(stmt, clientPlatformID, clientTypeID, userID, id).Scan(
 		&res.ClientPlatformID,
 		&res.ClientTypeID,
 		&res.UserID,

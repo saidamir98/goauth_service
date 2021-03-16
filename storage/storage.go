@@ -28,6 +28,7 @@ func NewStorageCassandra(cfg config.Config) CassandraStorageI {
 		cachedDataRepo: cassandra.NewCachedDataRepo(session),
 		authRepo:       cassandra.NewAuthRepo(session),
 		clientTypeRepo: cassandra.NewClientTypeRepo(session),
+		userRepo:       cassandra.NewUserRepo(session),
 	}
 }
 
@@ -36,6 +37,7 @@ type storageCassandra struct {
 	cachedDataRepo repo.CachedDataStorageI
 	authRepo       repo.AuthStorageI
 	clientTypeRepo repo.ClientTypeStorageI
+	userRepo       repo.UserStorageI
 }
 
 // CassandraStorageI ...
@@ -43,6 +45,7 @@ type CassandraStorageI interface {
 	CachedData() repo.CachedDataStorageI
 	Auth() repo.AuthStorageI
 	ClientType() repo.ClientTypeStorageI
+	User() repo.UserStorageI
 }
 
 // CachedData ...
@@ -58,4 +61,9 @@ func (s storageCassandra) Auth() repo.AuthStorageI {
 // ClientType ...
 func (s storageCassandra) ClientType() repo.ClientTypeStorageI {
 	return s.clientTypeRepo
+}
+
+// User ...
+func (s storageCassandra) User() repo.UserStorageI {
+	return s.userRepo
 }

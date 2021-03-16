@@ -66,6 +66,25 @@ definitions:
       user_id:
         type: string
     type: object
+  rest.RegisterUserModel:
+    properties:
+      client_type_id:
+        type: string
+      email:
+        type: string
+      expires_at:
+        type: string
+      login:
+        type: string
+      password:
+        type: string
+      phones:
+        items:
+          type: string
+        type: array
+      role_id:
+        type: string
+    type: object
   rest.ResponseModel:
     properties:
       code:
@@ -231,6 +250,38 @@ paths:
           schema:
             $ref: '#/definitions/rest.ResponseModel'
       summary: standard login
+      tags:
+      - auth
+  /v1/auth/user/register:
+    post:
+      consumes:
+      - application/json
+      description: register user
+      operationId: register-user
+      parameters:
+      - description: body
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/rest.RegisterUserModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            $ref: '#/definitions/rest.ResponseModel'
+      summary: register user
       tags:
       - auth
 swagger: "2.0"

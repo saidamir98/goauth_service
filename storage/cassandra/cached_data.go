@@ -35,12 +35,12 @@ func getRoleScopePermissions(db *gocql.Session) map[string][]string {
 		err error
 	)
 
-	query1 := `SELECT
+	stmt1 := `SELECT
 	role_id,
 	permission_id
 	FROM role_permission`
 
-	scanner1 := db.Query(query1).Iter().Scanner()
+	scanner1 := db.Query(stmt1).Iter().Scanner()
 	for scanner1.Next() {
 		var (
 			roleID       string
@@ -52,13 +52,13 @@ func getRoleScopePermissions(db *gocql.Session) map[string][]string {
 			log.Panic(err)
 		}
 
-		query2 := `SELECT
+		stmt2 := `SELECT
 		method,
 		url
 		FROM permission_scope
 		WHERE permission_id = ?`
 
-		scanner2 := db.Query(query2, permissionID).Iter().Scanner()
+		scanner2 := db.Query(stmt2, permissionID).Iter().Scanner()
 		for scanner2.Next() {
 			var (
 				method string

@@ -17,7 +17,7 @@ func NewClientTypeRepo(db *gocql.Session) repo.ClientTypeStorageI {
 }
 
 func (r *clientTypeRepo) GetByID(id string) (res rest.ClientTypeModel, err error) {
-	query := `SELECT
+	stmt := `SELECT
 	id,
 	name,
 	register_strategy,
@@ -26,7 +26,7 @@ func (r *clientTypeRepo) GetByID(id string) (res rest.ClientTypeModel, err error
 	FROM client_type
 	WHERE id = ?`
 
-	if err = r.db.Query(query, id).Scan(
+	if err = r.db.Query(stmt, id).Scan(
 		&res.ID,
 		&res.Name,
 		&res.RegisterStrategy,

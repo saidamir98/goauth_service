@@ -44,7 +44,7 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 	err := c.ShouldBindJSON(&entity)
 
 	if err != nil {
-		h.handleErrorResponse(c, 400, "parse error", err)
+		h.handleErrorResponse(c, 400, "parse error", err.Error())
 		return
 	}
 
@@ -66,18 +66,18 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 
 	user, err := h.storageCassandra.Auth().GetUserByID(userID)
 	if err != nil {
-		h.handleErrorResponse(c, 500, "something went wrong", err)
+		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
 	}
 
 	clientType, err := h.storageCassandra.ClientType().GetByID(user.ClientTypeID)
 	if err != nil {
-		h.handleErrorResponse(c, 500, "something went wrong", err)
+		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
 	}
 
 	if clientType.LoginStrategy != "STANDARD" {
-		h.handleErrorResponse(c, 403, "wrong login strategy", err)
+		h.handleErrorResponse(c, 403, "wrong login strategy", nil)
 		return
 	}
 
@@ -101,7 +101,7 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 
 	match, err := security.ComparePassword(user.Password, entity.Password)
 	if err != nil {
-		h.handleErrorResponse(c, 500, "server error", err)
+		h.handleErrorResponse(c, 500, "server error", err.Error())
 		return
 	}
 
@@ -118,7 +118,7 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 
 	uuid, err := uuid.NewRandom()
 	if err != nil {
-		h.handleErrorResponse(c, 500, "server error", err)
+		h.handleErrorResponse(c, 500, "server error", err.Error())
 		return
 	}
 
@@ -137,7 +137,7 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 
 	err = h.storageCassandra.Auth().CreateSession(session)
 	if err != nil {
-		h.handleErrorResponse(c, 500, "server error", err)
+		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
 	}
 
@@ -149,13 +149,13 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 
 	accessToken, err := security.GenerateJWT(m, config.AtExpireInTime, h.cfg.SecretKey)
 	if err != nil {
-		h.handleErrorResponse(c, 500, "server error", err)
+		h.handleErrorResponse(c, 500, "server error", err.Error())
 		return
 	}
 
 	refreshToken, err := security.GenerateJWT(m, config.AtExpireInTime, h.cfg.SecretKey)
 	if err != nil {
-		h.handleErrorResponse(c, 500, "server error", err)
+		h.handleErrorResponse(c, 500, "server error", err.Error())
 		return
 	}
 
@@ -200,13 +200,13 @@ func (h *Handler) HasAccess(c *gin.Context) {
 	err := c.ShouldBindJSON(&entity)
 
 	if err != nil {
-		h.handleErrorResponse(c, 400, "parse error", err)
+		h.handleErrorResponse(c, 400, "parse error", err.Error())
 		return
 	}
 
 	claims, err := security.ExtractClaims(entity.Token, h.cfg.SecretKey)
 	if err != nil {
-		h.handleErrorResponse(c, 401, "token error", err)
+		h.handleErrorResponse(c, 401, "token error", err.Error())
 		return
 	}
 
@@ -228,7 +228,7 @@ func (h *Handler) HasAccess(c *gin.Context) {
 
 	user, err := h.storageCassandra.Auth().GetUserByID(session.UserID)
 	if err != nil {
-		h.handleErrorResponse(c, 500, "something went wrong", err)
+		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
 	}
 
