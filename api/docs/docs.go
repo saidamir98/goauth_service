@@ -167,7 +167,91 @@ var doc = `{
                     "500": {
                         "description": "Server Error",
                         "schema": {
-                            "$ref": "#/definitions/rest.ResponseModel"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/refresh": {
+            "put": {
+                "description": "refresh user token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "refresh user token",
+                "operationId": "refresh-token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Platform Id",
+                        "name": "platform-id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Token Info",
+                        "name": "token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.RefreshTokenModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/rest.TokenModel"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -227,7 +311,19 @@ var doc = `{
                     "500": {
                         "description": "Server Error",
                         "schema": {
-                            "$ref": "#/definitions/rest.ResponseModel"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -280,7 +376,19 @@ var doc = `{
                     "500": {
                         "description": "Server Error",
                         "schema": {
-                            "$ref": "#/definitions/rest.ResponseModel"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -385,6 +493,17 @@ var doc = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.RefreshTokenModel": {
+            "type": "object",
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "token": {
                     "type": "string"
                 }
             }

@@ -18,8 +18,8 @@ import (
 // @Produce json
 // @Success 200 {object} rest.ResponseModel{data=string} "Success"
 // @Response 422 {object} rest.ResponseModel{error=string} "Validation Error"
-// @Response 400 {object} rest.ResponseModel "Bad Request"
-// @Failure 500 {object} rest.ResponseModel "Server Error"
+// @Response 400 {object} rest.ResponseModel{error=string} "Bad Request"
+// @Failure 500 {object} rest.ResponseModel{error=string} "Server Error"
 func (h *Handler) RegisterUser(c *gin.Context) {
 	var (
 		entity rest.RegisterUserModel

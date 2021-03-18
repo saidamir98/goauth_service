@@ -66,6 +66,13 @@ definitions:
       user_id:
         type: string
     type: object
+  rest.RefreshTokenModel:
+    properties:
+      token:
+        type: string
+    required:
+    - token
+    type: object
   rest.RegisterUserModel:
     properties:
       client_type_id:
@@ -211,8 +218,55 @@ paths:
         "500":
           description: Server Error
           schema:
-            $ref: '#/definitions/rest.ResponseModel'
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
       summary: has access
+      tags:
+      - auth
+  /v1/auth/refresh:
+    put:
+      consumes:
+      - application/json
+      description: refresh user token
+      operationId: refresh-token
+      parameters:
+      - description: Platform Id
+        in: header
+        name: platform-id
+        required: true
+        type: string
+      - description: Token Info
+        in: body
+        name: token
+        required: true
+        schema:
+          $ref: '#/definitions/rest.RefreshTokenModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/rest.TokenModel'
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: refresh user token
       tags:
       - auth
   /v1/auth/standard/login:
@@ -248,7 +302,12 @@ paths:
         "500":
           description: Server Error
           schema:
-            $ref: '#/definitions/rest.ResponseModel'
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
       summary: standard login
       tags:
       - auth
@@ -280,7 +339,12 @@ paths:
         "500":
           description: Server Error
           schema:
-            $ref: '#/definitions/rest.ResponseModel'
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
       summary: register user
       tags:
       - auth
