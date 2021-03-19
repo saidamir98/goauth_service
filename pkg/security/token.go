@@ -2,6 +2,7 @@ package security
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -54,4 +55,13 @@ func ExtractClaims(tokenString string, tokenSecretKey string) (jwt.MapClaims, er
 	}
 
 	return claims, nil
+}
+
+// ExtractToken checks and returns token part of input string
+func ExtractToken(bearer string) (token string, err error) {
+	strArr := strings.Split(bearer, " ")
+	if len(strArr) == 2 {
+		return strArr[1], nil
+	}
+	return token, errors.New("wrong token format")
 }

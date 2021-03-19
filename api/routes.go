@@ -23,5 +23,5 @@ func endpointsV1(r *gin.RouterGroup, h *v1.Handler) {
 	// r.DELETE("/auth/user", h.DeleteUser)
 
 	r.PUT("/auth/refresh", h.RefreshToken)
-	// r.POST("/auth/logout", h.Logout)
+	r.DELETE("/auth/logout", h.Logout)
 }

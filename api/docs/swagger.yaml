@@ -227,6 +227,47 @@ paths:
       summary: has access
       tags:
       - auth
+  /v1/auth/logout:
+    delete:
+      consumes:
+      - application/json
+      description: logout user by his/her token
+      operationId: logout
+      parameters:
+      - description: Platform Id
+        in: header
+        name: platform-id
+        required: true
+        type: string
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: logout user
+      tags:
+      - auth
   /v1/auth/refresh:
     put:
       consumes:

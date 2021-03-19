@@ -150,3 +150,14 @@ func (r *authRepo) GetSession(clientPlatformID, clientTypeID, userID, id string)
 
 	return res, nil
 }
+
+func (r *authRepo) DeleteSession(clientPlatformID, clientTypeID, userID, id string) (err error) {
+	stmt := `DELETE FROM session 
+	WHERE client_platform_id = ? AND client_type_id = ? AND user_id = ? AND id = ?`
+
+	if err = r.db.Query(stmt, clientPlatformID, clientTypeID, userID, id).Exec(); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/saidamir98/goauth_service/config"
+	"github.com/saidamir98/goauth_service/pkg/logger"
 	"github.com/saidamir98/goauth_service/pkg/security"
 	"github.com/saidamir98/goauth_service/pkg/util"
 
@@ -321,7 +322,7 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 
 	session, err := h.storageCassandra.Auth().GetSession(clientPlatformID, clientTypeID, userID, id)
 	if err != nil {
-		h.handleErrorResponse(c, 403, "forbidden", "session not found")
+		h.handleErrorResponse(c, 403, "forbidden", err.Error())
 		return
 	}
 
@@ -395,4 +396,67 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 		ExpiresAt:        session.ExpiresAt,
 		RefreshInSeconds: int(config.AtExpireInTime.Seconds()),
 	})
+}
+
+// Logout godoc
+// @ID logout
+// @Router /v1/auth/logout [DELETE]
+// @Tags auth
+// @Summary logout user
+// @Description logout user by his/her token
+// @Accept json
+// @Param platform-id header string true "Platform Id"
+// @Param Authorization header string true "Bearer Token"
+// @Produce json
+// @Success 204 {object} rest.ResponseModel{data=string} "Success"
+// @Response 422 {object} rest.ResponseModel{error=string} "Validation Error"
+// @Response 400 {object} rest.ResponseModel{error=string} "Bad Request"
+// @Response 401 {object} rest.ResponseModel{error=string} "Unauthorized"
+// @Response 403 {object} rest.ResponseModel{error=string} "Forbidden"
+// @Failure 500 {object} rest.ResponseModel{error=string} "Server Error"
+func (h *Handler) Logout(c *gin.Context) {
+	_clientPlatformID := c.GetHeader("platform-id")
+
+	if !util.IsValidUUID(_clientPlatformID) {
+		h.handleErrorResponse(c, 422, "validation error", "platform-id")
+		return
+	}
+
+	token, err := security.ExtractToken(c.GetHeader("Authorization"))
+
+	if err != nil {
+		h.handleErrorResponse(c, 400, "validation error", err.Error())
+		return
+	}
+
+	claims, err := security.ExtractClaims(token, h.cfg.SecretKey)
+	if err != nil {
+		h.handleErrorResponse(c, 401, "token error", err.Error())
+		return
+	}
+
+	clientPlatformID := claims["client_platform_id"].(string)
+	clientTypeID := claims["client_type_id"].(string)
+	userID := claims["user_id"].(string)
+	id := claims["id"].(string)
+
+	if _clientPlatformID != clientPlatformID {
+		h.handleErrorResponse(c, 401, "unauthorized", "mismatch platform-id with token info")
+		return
+	}
+
+	err = h.storageCassandra.Auth().DeleteSession(clientPlatformID, clientTypeID, userID, id)
+	if err != nil {
+		h.handleErrorResponse(c, 403, "forbidden", err.Error())
+		return
+	}
+
+	h.log.Info("logout",
+		logger.String("client_platform_id", clientPlatformID),
+		logger.String("client_type_id", clientTypeID),
+		logger.String("user_id", userID),
+		logger.String("id", id),
+	)
+
+	h.handleSuccessResponse(c, 204, "", nil) // status 204 returns no content
 }
