@@ -9,9 +9,10 @@ CREATE TABLE IF NOT EXISTS client_platform (
 CREATE TABLE IF NOT EXISTS client_type (
     id uuid,
     name text,
-    register_strategy text,
     login_strategy text,
-    recovery_strategy text,
+    confirm_by text,
+    self_register boolean,
+    self_recover boolean,
     primary key (id)
 );
 
@@ -118,3 +119,4 @@ CREATE TABLE IF NOT EXISTS session (
     expires_at timestamp,
     primary key ((client_platform_id, client_type_id), user_id, id)
 );
+CREATE INDEX IF NOT EXISTS ON session(user_id);

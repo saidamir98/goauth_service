@@ -238,6 +238,150 @@
                 }
             }
         },
+        "/v1/auth/passcode/confirm": {
+            "post": {
+                "description": "confirm passcode",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "confirm passcode",
+                "operationId": "confirm-passcode",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Platform Id",
+                        "name": "platform-id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "credentials",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.ConfirmPasscodeModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/rest.TokenModel"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/passcode/generate": {
+            "post": {
+                "description": "generate passcode",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "generate passcode",
+                "operationId": "generate-passcode",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Platform Id",
+                        "name": "platform-id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "credentials",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.GeneratePasscodeModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/rest.GeneratePasscodeResponseModel"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/v1/auth/refresh": {
             "put": {
                 "description": "refresh user token",
@@ -530,6 +674,59 @@
                 }
             }
         },
+        "rest.ConfirmPasscodeModel": {
+            "type": "object",
+            "properties": {
+                "passcode": {
+                    "type": "string"
+                },
+                "passcode_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.GeneratePasscodeModel": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "client_type_id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.GeneratePasscodeResponseModel": {
+            "type": "object",
+            "properties": {
+                "passcode_token": {
+                    "type": "string"
+                },
+                "period": {
+                    "description": "period in seconds",
+                    "type": "integer"
+                },
+                "user": {
+                    "type": "object",
+                    "$ref": "#/definitions/rest.UserModel"
+                },
+                "user_found": {
+                    "type": "boolean"
+                },
+                "user_sessions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rest.SessionModel"
+                    }
+                }
+            }
+        },
         "rest.HasAccessModel": {
             "type": "object",
             "properties": {
@@ -607,6 +804,41 @@
                 }
             }
         },
+        "rest.SessionModel": {
+            "type": "object",
+            "properties": {
+                "client_platform_id": {
+                    "type": "string"
+                },
+                "client_type_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "rest.StandardLoginModel": {
             "type": "object",
             "required": [
@@ -638,6 +870,41 @@
                     "type": "integer"
                 },
                 "refresh_token": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_sessions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rest.SessionModel"
+                    }
+                }
+            }
+        },
+        "rest.UserModel": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "integer"
+                },
+                "client_type_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role_id": {
                     "type": "string"
                 },
                 "updated_at": {

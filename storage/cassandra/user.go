@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/saidamir98/goauth/modules/rest"
+	"github.com/saidamir98/goauth_service/modules/rest"
 	"github.com/saidamir98/goauth_service/storage/repo"
 
 	"github.com/gocql/gocql"

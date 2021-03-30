@@ -8,7 +8,7 @@ import (
 	"github.com/saidamir98/goauth_service/pkg/util"
 
 	"github.com/gocql/gocql"
-	"github.com/saidamir98/goauth/modules/rest"
+	"github.com/saidamir98/goauth_service/modules/rest"
 )
 
 type authRepo struct {
@@ -160,4 +160,45 @@ func (r *authRepo) DeleteSession(clientPlatformID, clientTypeID, userID, id stri
 	}
 
 	return nil
+}
+
+func (r *authRepo) GetSessionsByUserID(userID string) (res []rest.SessionModel, err error) {
+	stmt := `SELECT
+	client_platform_id,
+	client_type_id,
+	user_id,
+	id,
+	role_id,
+	ip,
+	data, 
+	created_at,
+	updated_at,
+	expires_at
+	FROM session
+	WHERE user_id = ?`
+
+	scanner := r.db.Query(stmt, userID).Iter().Scanner()
+
+	for scanner.Next() {
+		var session rest.SessionModel
+
+		if err = scanner.Scan(
+			&session.ClientPlatformID,
+			&session.ClientTypeID,
+			&session.UserID,
+			&session.ID,
+			&session.RoleID,
+			&session.IP,
+			&session.Data,
+			&session.CreatedAt,
+			&session.UpdatedAt,
+			&session.ExpiresAt,
+		); err != nil {
+			return res, err
+		}
+
+		res = append(res, session)
+	}
+
+	return res, nil
 }

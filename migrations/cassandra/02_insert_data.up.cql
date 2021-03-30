@@ -6,14 +6,14 @@ INSERT INTO client_platform(id, name) VALUES (7d4a4c38-dd84-4902-b744-0488b80a4c
 INSERT INTO client_platform(id, name) VALUES (7d4a4c38-dd84-4902-b744-0488b80a4c04, 'DESKTOP');
 INSERT INTO client_platform(id, name) VALUES (7d4a4c38-dd84-4902-b744-0488b80a4c05, 'TELEGRAM_BOT');
 
-INSERT INTO client_type(id, name, register_strategy, login_strategy, recovery_strategy) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c01, 'ADMIN', null, 'STANDARD', 'OTP');
-INSERT INTO client_type(id, name, register_strategy, login_strategy, recovery_strategy) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c02, 'DIRECTOR', null, 'PASSCODE', 'OTP');
-INSERT INTO client_type(id, name, register_strategy, login_strategy, recovery_strategy) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c03, 'MANAGER', null, 'PASSCODE', 'OTP');
-INSERT INTO client_type(id, name, register_strategy, login_strategy, recovery_strategy) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c04, 'CONSULTANT', null, 'STANDARD', 'OTP');
-INSERT INTO client_type(id, name, register_strategy, login_strategy, recovery_strategy) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c05, 'CASHIER', null, 'STANDARD', 'OTP');
-INSERT INTO client_type(id, name, register_strategy, login_strategy, recovery_strategy) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c06, 'GUEST', null, 'OTP', 'OTP');
-INSERT INTO client_type(id, name, register_strategy, login_strategy, recovery_strategy) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c07, 'CUSTOMER', 'OTP', 'OTP', 'OTP');
-INSERT INTO client_type(id, name, register_strategy, login_strategy, recovery_strategy) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c08, 'WEBHOOK', null, 'KEY', null);
+INSERT INTO client_type(id, name, login_strategy, confirm_by, self_register, self_recover) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c01, 'ADMIN', 'STANDARD', null, False, False);
+INSERT INTO client_type(id, name, login_strategy, confirm_by, self_register, self_recover) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c02, 'DIRECTOR', 'PASSCODE', 'EMAIL', False, False);
+INSERT INTO client_type(id, name, login_strategy, confirm_by, self_register, self_recover) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c03, 'MANAGER', 'PASSCODE', 'EMAIL', False, False);
+INSERT INTO client_type(id, name, login_strategy, confirm_by, self_register, self_recover) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c04, 'CONSULTANT', 'STANDARD', 'PHONE', False, True);
+INSERT INTO client_type(id, name, login_strategy, confirm_by, self_register, self_recover) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c05, 'CASHIER', 'STANDARD', 'PHONE', False, True);
+INSERT INTO client_type(id, name, login_strategy, confirm_by, self_register, self_recover) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c06, 'GUEST', 'OTP', 'PHONE', False, True);
+INSERT INTO client_type(id, name, login_strategy, confirm_by, self_register, self_recover) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c07, 'CUSTOMER', 'OTP', 'PHONE', True, True);
+INSERT INTO client_type(id, name, login_strategy, confirm_by, self_register, self_recover) VALUES (5a3818a9-90f0-44e9-a053-3be0ba1e2c08, 'WEBHOOK', 'KEY', null, False, False);
 
 INSERT INTO client(client_platform_id, client_type_id) VALUES (7d4a4c38-dd84-4902-b744-0488b80a4c01, 5a3818a9-90f0-44e9-a053-3be0ba1e2c01);
 INSERT INTO client(client_platform_id, client_type_id) VALUES (7d4a4c38-dd84-4902-b744-0488b80a4c01, 5a3818a9-90f0-44e9-a053-3be0ba1e2c02);

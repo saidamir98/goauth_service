@@ -3,8 +3,8 @@ package v1
 import (
 	"strconv"
 
-	"github.com/saidamir98/goauth/modules/rest"
 	"github.com/saidamir98/goauth_service/config"
+	"github.com/saidamir98/goauth_service/modules/rest"
 	"github.com/saidamir98/goauth_service/pkg/logger"
 	"github.com/saidamir98/goauth_service/storage"
 

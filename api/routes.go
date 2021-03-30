@@ -11,11 +11,8 @@ func endpointsV1(r *gin.RouterGroup, h *v1.Handler) {
 
 	r.POST("/auth/has-access", h.HasAccess)
 
-	// r.POST("/auth/otp/generate", h.GenerateOTP)
-	// r.POST("/auth/otp/confirm", h.ConfirmOTP)
-
-	// r.POST("/auth/passcode/generate", h.GeneratePasscode)
-	// r.POST("/auth/passcode/confirm", h.ConfirmPasscode)
+	r.POST("/auth/passcode/generate", h.GeneratePasscode)
+	r.POST("/auth/passcode/confirm", h.ConfirmPasscode)
 
 	r.POST("/auth/user/register", h.RegisterUser)
 	// r.PUT("/auth/user/:id", h.UpdateUser)

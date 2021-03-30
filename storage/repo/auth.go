@@ -1,6 +1,6 @@
 package repo
 
-import "github.com/saidamir98/goauth/modules/rest"
+import "github.com/saidamir98/goauth_service/modules/rest"
 
 // AuthStorageI ...
 type AuthStorageI interface {
@@ -10,4 +10,5 @@ type AuthStorageI interface {
 	CreateSession(entity rest.SessionModel) (err error)
 	GetSession(clientPlatformID, clientTypeID, userID, id string) (res rest.SessionModel, err error)
 	DeleteSession(clientPlatformID, clientTypeID, userID, id string) (err error)
+	GetSessionsByUserID(userID string) (res []rest.SessionModel, err error)
 }

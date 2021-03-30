@@ -53,6 +53,41 @@ definitions:
       url:
         type: string
     type: object
+  rest.ConfirmPasscodeModel:
+    properties:
+      passcode:
+        type: string
+      passcode_token:
+        type: string
+    type: object
+  rest.GeneratePasscodeModel:
+    properties:
+      client_type_id:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - username
+    type: object
+  rest.GeneratePasscodeResponseModel:
+    properties:
+      passcode_token:
+        type: string
+      period:
+        description: period in seconds
+        type: integer
+      user:
+        $ref: '#/definitions/rest.UserModel'
+        type: object
+      user_found:
+        type: boolean
+      user_sessions:
+        items:
+          $ref: '#/definitions/rest.SessionModel'
+        type: array
+    type: object
   rest.HasAccessModel:
     properties:
       client_platform_id:
@@ -103,6 +138,29 @@ definitions:
       message:
         type: string
     type: object
+  rest.SessionModel:
+    properties:
+      client_platform_id:
+        type: string
+      client_type_id:
+        type: string
+      created_at:
+        type: string
+      data:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      ip:
+        type: string
+      role_id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
   rest.StandardLoginModel:
     properties:
       password:
@@ -124,6 +182,29 @@ definitions:
       refresh_in_seconds:
         type: integer
       refresh_token:
+        type: string
+      updated_at:
+        type: string
+      user_sessions:
+        items:
+          $ref: '#/definitions/rest.SessionModel'
+        type: array
+    type: object
+  rest.UserModel:
+    properties:
+      active:
+        type: integer
+      client_type_id:
+        type: string
+      created_at:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+      role_id:
         type: string
       updated_at:
         type: string
@@ -266,6 +347,90 @@ paths:
                   type: string
               type: object
       summary: logout user
+      tags:
+      - auth
+  /v1/auth/passcode/confirm:
+    post:
+      consumes:
+      - application/json
+      description: confirm passcode
+      operationId: confirm-passcode
+      parameters:
+      - description: Platform Id
+        in: header
+        name: platform-id
+        required: true
+        type: string
+      - description: credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/rest.ConfirmPasscodeModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/rest.TokenModel'
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: confirm passcode
+      tags:
+      - auth
+  /v1/auth/passcode/generate:
+    post:
+      consumes:
+      - application/json
+      description: generate passcode
+      operationId: generate-passcode
+      parameters:
+      - description: Platform Id
+        in: header
+        name: platform-id
+        required: true
+        type: string
+      - description: credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/rest.GeneratePasscodeModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/rest.GeneratePasscodeResponseModel'
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: generate passcode
       tags:
       - auth
   /v1/auth/refresh:

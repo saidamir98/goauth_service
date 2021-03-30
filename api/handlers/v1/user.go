@@ -2,7 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/saidamir98/goauth/modules/rest"
+	"github.com/saidamir98/goauth_service/modules/rest"
 	"github.com/saidamir98/goauth_service/pkg/security"
 	"github.com/saidamir98/goauth_service/pkg/util"
 )
