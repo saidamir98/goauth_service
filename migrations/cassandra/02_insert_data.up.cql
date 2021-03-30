@@ -118,6 +118,7 @@ INSERT INTO user_phone(phone, user_id, created_at, updated_at) VALUES ('+9989876
 
 INSERT INTO user_email(email, user_id, created_at, updated_at) VALUES ('email1@example.com', f799f1c5-ce5f-4fdd-ac23-f542247dcc01, toTimeStamp(now()), toTimeStamp(now()));
 INSERT INTO user_email(email, user_id, created_at, updated_at) VALUES ('email2@example.com', f799f1c5-ce5f-4fdd-ac23-f542247dcc02, toTimeStamp(now()), toTimeStamp(now()));
+INSERT INTO user_email(email, user_id, created_at, updated_at) VALUES ('email3@example.com', f799f1c5-ce5f-4fdd-ac23-f542247dcc03, toTimeStamp(now()), toTimeStamp(now()));
 
 INSERT INTO user_login(login, user_id, created_at, updated_at) VALUES ('AD2100000001', f799f1c5-ce5f-4fdd-ac23-f542247dcc01, toTimeStamp(now()), toTimeStamp(now()));
 

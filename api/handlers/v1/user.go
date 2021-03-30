@@ -62,7 +62,7 @@ func (h *Handler) RegisterUser(c *gin.Context) {
 	entity.Password = hashedPassword
 	entity.Active = 0
 
-	userID, err := h.storageCassandra.User().RegisterUser(entity)
+	userID, err := h.storageCassandra.Auth().RegisterUser(entity)
 	if err != nil {
 		h.handleErrorResponse(c, 400, "database error", err.Error())
 		return

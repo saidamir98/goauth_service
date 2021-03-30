@@ -2,7 +2,9 @@ package cassandra
 
 import (
 	"errors"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/saidamir98/goauth_service/storage/repo"
 
 	"github.com/saidamir98/goauth_service/pkg/util"
@@ -41,164 +43,107 @@ func (r *authRepo) GetUserIDByUsername(username string) (userID string, err erro
 	return userID, nil
 }
 
-func (r *authRepo) GetUserByID(id string) (res rest.UserModel, err error) {
-	query := `SELECT
-	id,
-	client_type_id,
-	role_id,
-	password,
-	active,
-	expires_at,
-	created_at,
-	updated_at
-	FROM user WHERE id = ?`
-
-	if err = r.db.Query(query, id).Scan(
-		&res.ID,
-		&res.ClientTypeID,
-		&res.RoleID,
-		&res.Password,
-		&res.Active,
-		&res.ExpiresAt,
-		&res.CreatedAt,
-		&res.UpdatedAt,
-	); err != nil {
-		return res, err
+func (r *authRepo) RegisterUser(entity rest.RegisterUserModel) (userID string, err error) {
+	uuid, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
 	}
+	entity.ID = uuid.String()
 
-	return res, nil
-}
+	batch := gocql.NewBatch(gocql.LoggedBatch)
 
-func (r *authRepo) GetClient(clientPlatformID, clientTypeID string) (res rest.ClientModel, err error) {
 	stmt := `SELECT
-	client_platform_id,
-	client_type_id
-	FROM client
-	WHERE client_platform_id = ? AND client_type_id = ?`
-
-	if err = r.db.Query(stmt, clientPlatformID, clientTypeID).Scan(
-		&res.ClientPlatformID,
-		&res.ClientTypeID,
-	); err != nil {
-		return res, err
-	}
-
-	return res, nil
-}
-
-func (r *authRepo) CreateSession(entity rest.SessionModel) (err error) {
-	qry := r.db.Query(`INSERT INTO session(
-		client_platform_id,
-		client_type_id,
-		user_id,
-		id,
-		role_id,
-		ip,
-		data, 
-		created_at,
-		updated_at,
-		expires_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) USING TTL ?`,
-		entity.ClientPlatformID,
-		entity.ClientTypeID,
-		entity.UserID,
-		entity.ID,
-		entity.RoleID,
-		entity.IP,
-		entity.Data,
-		entity.CreatedAt,
-		entity.UpdatedAt,
-		entity.ExpiresAt,
-		int(entity.ExpiresAt.Sub(entity.CreatedAt).Seconds()),
+	client_type_id,
+	name,
+	id
+	FROM role WHERE id = ? LIMIT 1`
+	var (
+		clientTypeID string
+		roleName     string
+		roleID       string
+		c            int
 	)
-
-	if err := qry.Exec(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r *authRepo) GetSession(clientPlatformID, clientTypeID, userID, id string) (res rest.SessionModel, err error) {
-	stmt := `SELECT
-	client_platform_id,
-	client_type_id,
-	user_id,
-	id,
-	role_id,
-	ip,
-	data, 
-	created_at,
-	updated_at,
-	expires_at
-	FROM session
-	WHERE client_platform_id = ? AND client_type_id = ? AND user_id = ? AND id = ?`
-
-	if err = r.db.Query(stmt, clientPlatformID, clientTypeID, userID, id).Scan(
-		&res.ClientPlatformID,
-		&res.ClientTypeID,
-		&res.UserID,
-		&res.ID,
-		&res.RoleID,
-		&res.IP,
-		&res.Data,
-		&res.CreatedAt,
-		&res.UpdatedAt,
-		&res.ExpiresAt,
+	if err = r.db.Query(stmt, entity.RoleID).Scan(
+		&clientTypeID,
+		&roleName,
+		&roleID,
 	); err != nil {
-		return res, err
+		return "", err
 	}
 
-	return res, nil
-}
-
-func (r *authRepo) DeleteSession(clientPlatformID, clientTypeID, userID, id string) (err error) {
-	stmt := `DELETE FROM session 
-	WHERE client_platform_id = ? AND client_type_id = ? AND user_id = ? AND id = ?`
-
-	if err = r.db.Query(stmt, clientPlatformID, clientTypeID, userID, id).Exec(); err != nil {
-		return err
+	if clientTypeID != entity.ClientTypeID {
+		return "", errors.New("mismatch between role_id and client_type_id")
 	}
 
-	return nil
-}
-
-func (r *authRepo) GetSessionsByUserID(userID string) (res []rest.SessionModel, err error) {
-	stmt := `SELECT
-	client_platform_id,
-	client_type_id,
-	user_id,
-	id,
-	role_id,
-	ip,
-	data, 
-	created_at,
-	updated_at,
-	expires_at
-	FROM session
-	WHERE user_id = ?`
-
-	scanner := r.db.Query(stmt, userID).Iter().Scanner()
-
-	for scanner.Next() {
-		var session rest.SessionModel
-
-		if err = scanner.Scan(
-			&session.ClientPlatformID,
-			&session.ClientTypeID,
-			&session.UserID,
-			&session.ID,
-			&session.RoleID,
-			&session.IP,
-			&session.Data,
-			&session.CreatedAt,
-			&session.UpdatedAt,
-			&session.ExpiresAt,
+	stmtInsertUserPhone := `INSERT INTO user_phone
+		(phone,
+		user_id,
+		created_at,
+		updated_at)
+	VALUES(?, ?, ?, ?)`
+	for i := 0; i < len(entity.Phones); i++ {
+		if err = r.db.Query(`SELECT count(user_id) FROM user_phone WHERE phone = ? LIMIT 1`, entity.Phones[i]).Scan(
+			&c,
 		); err != nil {
-			return res, err
+			return "", err
 		}
-
-		res = append(res, session)
+		if c > 0 {
+			return "", errors.New("phone is taken")
+		}
+		batch.Query(stmtInsertUserPhone, entity.Phones[i], entity.ID, time.Now(), time.Now())
 	}
 
-	return res, nil
+	if err = r.db.Query(`SELECT count(user_id) FROM user_email WHERE email = ? LIMIT 1`, entity.Email).Scan(
+		&c,
+	); err != nil {
+		return "", err
+	}
+	if c > 0 {
+		return "", errors.New("email is taken")
+	}
+
+	stmtInsertUserEmail := `INSERT INTO user_email
+		(email,
+		user_id,
+		created_at,
+		updated_at)
+	VALUES(?, ?, ?, ?)`
+	batch.Query(stmtInsertUserEmail, entity.Email, entity.ID, time.Now(), time.Now())
+
+	if err = r.db.Query(`SELECT count(user_id) FROM user_login WHERE login = ? LIMIT 1`, entity.Login).Scan(
+		&c,
+	); err != nil {
+		return "", err
+	}
+	if c > 0 {
+		return "", errors.New("login is taken")
+	}
+
+	stmtInsertUserLogin := `INSERT INTO user_login
+		(login,
+		user_id,
+		created_at,
+		updated_at)
+	VALUES(?, ?, ?, ?)`
+	batch.Query(stmtInsertUserLogin, entity.Login, entity.ID, time.Now(), time.Now())
+
+	stmtInsertUser := `INSERT INTO user
+		(id,
+		client_type_id,
+		role_id,
+		password,
+		active,
+		expires_at,
+		created_at,
+		updated_at)
+	VALUES(?, ?, ?, ?, ?, ?, ?, ?)`
+
+	batch.Query(stmtInsertUser, entity.ID, entity.ClientTypeID, entity.RoleID, entity.Password, entity.Active, entity.ExpiresAt, time.Now(), time.Now())
+
+	err = r.db.ExecuteBatch(batch)
+	if err != nil {
+		return "", err
+	}
+
+	return entity.ID, nil
 }

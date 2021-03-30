@@ -63,19 +63,19 @@ func (h *Handler) HasAccess(c *gin.Context) {
 		h.handleErrorResponse(c, 401, "unauthorized", "mismatch platform-id with token info")
 	}
 
-	session, err := h.storageCassandra.Auth().GetSession(clientPlatformID, clientTypeID, userID, id)
+	session, err := h.storageCassandra.Session().Get(clientPlatformID, clientTypeID, userID, id)
 	if err != nil {
 		h.handleErrorResponse(c, 403, "forbidden", "session not found")
 		return
 	}
 
-	_, err = h.storageCassandra.Auth().GetClient(clientPlatformID, session.ClientTypeID)
+	_, err = h.storageCassandra.Client().Get(clientPlatformID, session.ClientTypeID)
 	if err != nil {
 		h.handleErrorResponse(c, 403, "forbidden", "platform blocked")
 		return
 	}
 
-	user, err := h.storageCassandra.Auth().GetUserByID(session.UserID)
+	user, err := h.storageCassandra.User().GetByID(session.UserID)
 	if err != nil {
 		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
@@ -162,19 +162,19 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	session, err := h.storageCassandra.Auth().GetSession(clientPlatformID, clientTypeID, userID, id)
+	session, err := h.storageCassandra.Session().Get(clientPlatformID, clientTypeID, userID, id)
 	if err != nil {
 		h.handleErrorResponse(c, 403, "forbidden", err.Error())
 		return
 	}
 
-	_, err = h.storageCassandra.Auth().GetClient(clientPlatformID, session.ClientTypeID)
+	_, err = h.storageCassandra.Client().Get(clientPlatformID, session.ClientTypeID)
 	if err != nil {
 		h.handleErrorResponse(c, 403, "forbidden", "platform blocked")
 		return
 	}
 
-	user, err := h.storageCassandra.Auth().GetUserByID(session.UserID)
+	user, err := h.storageCassandra.User().GetByID(session.UserID)
 	if err != nil {
 		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
@@ -205,7 +205,7 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 	session.UpdatedAt = time.Now()
 	session.ExpiresAt = time.Now().Add(config.RtExpireInTime)
 
-	err = h.storageCassandra.Auth().CreateSession(session)
+	err = h.storageCassandra.Session().Create(session)
 	if err != nil {
 		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
@@ -287,7 +287,7 @@ func (h *Handler) Logout(c *gin.Context) {
 		return
 	}
 
-	err = h.storageCassandra.Auth().DeleteSession(clientPlatformID, clientTypeID, userID, id)
+	err = h.storageCassandra.Session().Delete(clientPlatformID, clientTypeID, userID, id)
 	if err != nil {
 		h.handleErrorResponse(c, 403, "forbidden", err.Error())
 		return
