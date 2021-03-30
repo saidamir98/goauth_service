@@ -18,7 +18,6 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/pquerna/otp v1.3.0
-	github.com/saidamir98/goauth v0.0.3 // indirect
 	github.com/spf13/cast v1.3.1
 	github.com/streadway/amqp v1.0.0
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
