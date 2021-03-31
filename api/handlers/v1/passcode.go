@@ -36,6 +36,8 @@ func (h *Handler) GeneratePasscode(c *gin.Context) {
 		response rest.GeneratePasscodeResponseModel
 	)
 
+	response.Period = 60
+
 	clientPlatformID := c.GetHeader("platform-id")
 	if !util.IsValidUUID(clientPlatformID) {
 		h.handleErrorResponse(c, 422, "validation error", "platform-id")
@@ -54,6 +56,8 @@ func (h *Handler) GeneratePasscode(c *gin.Context) {
 		return
 	}
 
+	response.ClientType = clientType
+
 	switch clientType.ConfirmBy {
 	case "EMAIL":
 		if !util.IsValidEmail(entity.Username) {
@@ -71,21 +75,24 @@ func (h *Handler) GeneratePasscode(c *gin.Context) {
 	}
 
 	userID, err := h.storageCassandra.Auth().GetUserIDByUsername(entity.Username)
-
 	if err != nil {
 		response.UserFound = false
+		response.Period = response.Period * 10
 		//
-		// TODO - if self_register is enabled generate and send passcode, also include secret in response
+		// TODO - if self_register is enabled generate and send passcode to register
 		//
 		h.handleErrorResponse(c, 200, "ok", response)
 		return
 	}
+	response.UserFound = true
 
 	user, err := h.storageCassandra.User().GetByID(userID)
 	if err != nil {
 		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
 	}
+
+	response.User = user
 
 	if user.ClientTypeID != clientType.ID {
 		h.handleErrorResponse(c, 403, "forbidden", "mismatch between given client_type_id and user client_type_id")
@@ -148,34 +155,61 @@ func (h *Handler) GeneratePasscode(c *gin.Context) {
 		return
 	}
 
-	passcode, key, err := security.GeneratePasscode("goauth.uz", entity.Username)
+	response.UserSessions = sessions
+
+	code, err := security.GenerateRandomStringByPool(8, "0123456789")
 	if err != nil {
 		h.handleErrorResponse(c, 500, "server error", err.Error())
+		return
+	}
+
+	hashedCode, err := security.HashPassword(code)
+	if err != nil {
+		h.handleErrorResponse(c, 500, "server error", err.Error())
+		return
+	}
+
+	uuid, err := uuid.NewRandom()
+	if err != nil {
+		h.handleErrorResponse(c, 500, "server error", err.Error())
+		return
+	}
+
+	duration := time.Duration(response.Period) * time.Second
+
+	passcode := rest.PasscodeModel{
+		UserID:     user.ID,
+		ID:         uuid.String(),
+		ConfirmBy:  clientType.ConfirmBy,
+		HashedCode: hashedCode,
+		State:      0,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+		ExpiresAt:  time.Now().Add(duration),
+	}
+
+	err = h.storageCassandra.Passcode().Create(passcode)
+	if err != nil {
+		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
 	}
 
 	m := map[string]interface{}{
-		"secret":  key.Secret(),
-		"user_id": user.ID,
+		"user_id": passcode.UserID,
+		"id":      passcode.ID,
 	}
 
-	passcodeToken, err := security.GenerateJWT(m, time.Second*time.Duration(key.Period()+10), h.cfg.SecretKey)
+	passcodeToken, err := security.GenerateJWT(m, duration, h.cfg.SecretKey)
 	if err != nil {
 		h.handleErrorResponse(c, 500, "server error", err.Error())
 		return
 	}
-
-	fmt.Println("secret = ", key.Secret())
-	fmt.Println("passcode = ", passcode)
-	//
-	// TODO - send passcode to the user email or phone
-	//
-
-	response.UserFound = true
-	response.User = user
-	response.UserSessions = sessions
 	response.PasscodeToken = passcodeToken
-	response.Period = key.Period()
+
+	fmt.Println(code)
+	//
+	// TODO - send code to the user email or phone
+	//
 
 	h.handleSuccessResponse(c, 200, "ok", response)
 	return
@@ -191,7 +225,7 @@ func (h *Handler) GeneratePasscode(c *gin.Context) {
 // @Param platform-id header string true "Platform Id"
 // @Param credentials body rest.ConfirmPasscodeModel true "credentials"
 // @Produce json
-// @Success 200 {object} rest.ResponseModel{data=rest.TokenModel} "Success"
+// @Success 200 {object} rest.ResponseModel{data=rest.LoginResponseModel} "Success"
 // @Response 422 {object} rest.ResponseModel{error=string} "Validation Error"
 // @Response 400 {object} rest.ResponseModel{error=string} "Bad Request"
 // @Response 401 {object} rest.ResponseModel{error=string} "Unauthorized"
@@ -199,7 +233,8 @@ func (h *Handler) GeneratePasscode(c *gin.Context) {
 // @Failure 500 {object} rest.ResponseModel{error=string} "Server Error"
 func (h *Handler) ConfirmPasscode(c *gin.Context) {
 	var (
-		entity rest.ConfirmPasscodeModel
+		entity   rest.ConfirmPasscodeModel
+		response rest.LoginResponseModel
 	)
 
 	clientPlatformID := c.GetHeader("platform-id")
@@ -220,14 +255,17 @@ func (h *Handler) ConfirmPasscode(c *gin.Context) {
 		return
 	}
 
-	secret := claims["secret"].(string)
 	userID := claims["user_id"].(string)
+	id := claims["id"].(string)
 
 	user, err := h.storageCassandra.User().GetByID(userID)
 	if err != nil {
 		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
 	}
+
+	response.UserFound = true
+	response.User = user
 
 	if user.Active < 0 {
 		h.handleErrorResponse(c, 403, "forbidden", "user is not active")
@@ -244,11 +282,13 @@ func (h *Handler) ConfirmPasscode(c *gin.Context) {
 		return
 	}
 
-	_, err = h.storageCassandra.ClientType().GetByID(user.ClientTypeID)
+	clientType, err := h.storageCassandra.ClientType().GetByID(user.ClientTypeID)
 	if err != nil {
 		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
 	}
+
+	response.ClientType = clientType
 
 	_, err = h.storageCassandra.Client().Get(clientPlatformID, user.ClientTypeID)
 	if err != nil {
@@ -256,15 +296,33 @@ func (h *Handler) ConfirmPasscode(c *gin.Context) {
 		return
 	}
 
-	valid, err := security.ValidatePasscode(entity.Passcode, secret)
+	passcode, err := h.storageCassandra.Passcode().Get(userID, id)
+	if err != nil {
+		h.handleErrorResponse(c, 403, "forbidden", err.Error())
+		return
+	}
+
+	if !(-3 < passcode.State || passcode.State < 1) {
+		h.handleErrorResponse(c, 403, "forbidden", "passcode state: "+string(passcode.State))
+		return
+	}
+
+	match, err := security.ComparePassword(passcode.HashedCode, entity.Passcode)
 	if err != nil {
 		h.handleErrorResponse(c, 500, "server error", err.Error())
 		return
 	}
 
-	if !valid {
+	passcode.UpdatedAt = time.Now()
+	if !match {
+		passcode.State = passcode.State - 1
 		h.handleErrorResponse(c, 403, "forbidden", "wrong passcode or passcode token")
+		// TODO - Update passcode
+		return
 	}
+
+	passcode.State = 1
+	// TODO - Update passcode
 
 	uuid, err := uuid.NewRandom()
 	if err != nil {
@@ -316,13 +374,17 @@ func (h *Handler) ConfirmPasscode(c *gin.Context) {
 		return
 	}
 
-	h.handleSuccessResponse(c, 200, "ok", rest.TokenModel{
+	response.UserSessions = sessions
+	response.Token = rest.TokenModel{
 		AccessToken:      accessToken,
 		RefreshToken:     refreshToken,
 		CreatedAt:        session.CreatedAt,
 		UpdatedAt:        session.ExpiresAt,
 		ExpiresAt:        session.ExpiresAt,
 		RefreshInSeconds: int(config.AtExpireInTime.Seconds()),
-		UserSessions:     sessions,
-	})
+	}
+
+	h.handleSuccessResponse(c, 200, "ok", response)
+	return
+
 }

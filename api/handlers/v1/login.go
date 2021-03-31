@@ -23,7 +23,7 @@ import (
 // @Param platform-id header string true "Platform Id"
 // @Param credentials body rest.StandardLoginModel true "credentials"
 // @Produce json
-// @Success 200 {object} rest.ResponseModel{data=rest.TokenModel} "Success"
+// @Success 200 {object} rest.ResponseModel{data=rest.LoginResponseModel} "Success"
 // @Response 422 {object} rest.ResponseModel{error=string} "Validation Error"
 // @Response 400 {object} rest.ResponseModel{error=string} "Bad Request"
 // @Response 401 {object} rest.ResponseModel{error=string} "Unauthorized"
@@ -31,7 +31,8 @@ import (
 // @Failure 500 {object} rest.ResponseModel{error=string} "Server Error"
 func (h *Handler) StandardLogin(c *gin.Context) {
 	var (
-		entity rest.StandardLoginModel
+		entity   rest.StandardLoginModel
+		response rest.LoginResponseModel
 	)
 
 	clientPlatformID := c.GetHeader("platform-id")
@@ -64,17 +65,23 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 		return
 	}
 
+	response.UserFound = true
+
 	user, err := h.storageCassandra.User().GetByID(userID)
 	if err != nil {
 		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
 	}
 
+	response.User = user
+
 	clientType, err := h.storageCassandra.ClientType().GetByID(user.ClientTypeID)
 	if err != nil {
 		h.handleErrorResponse(c, 500, "database error", err.Error())
 		return
 	}
+
+	response.ClientType = clientType
 
 	if clientType.LoginStrategy != "STANDARD" {
 		h.handleErrorResponse(c, 403, "wrong login strategy", nil)
@@ -166,13 +173,15 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 		return
 	}
 
-	h.handleSuccessResponse(c, 200, "ok", rest.TokenModel{
+	response.UserSessions = sessions
+	response.Token = rest.TokenModel{
 		AccessToken:      accessToken,
 		RefreshToken:     refreshToken,
 		CreatedAt:        session.CreatedAt,
 		UpdatedAt:        session.ExpiresAt,
 		ExpiresAt:        session.ExpiresAt,
 		RefreshInSeconds: int(config.AtExpireInTime.Seconds()),
-		UserSessions:     sessions,
-	})
+	}
+
+	h.handleSuccessResponse(c, 200, "ok", response)
 }

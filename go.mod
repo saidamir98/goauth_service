@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-openapi/spec v0.20.3 // indirect
@@ -17,7 +16,6 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/pquerna/otp v1.3.0
 	github.com/spf13/cast v1.3.1
 	github.com/streadway/amqp v1.0.0
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14

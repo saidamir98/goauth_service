@@ -120,3 +120,15 @@ CREATE TABLE IF NOT EXISTS session (
     primary key ((client_platform_id, client_type_id), user_id, id)
 );
 CREATE INDEX IF NOT EXISTS ON session(user_id);
+
+CREATE TABLE IF NOT EXISTS passcode (
+    user_id uuid,
+    id uuid,
+    confirm_by text,
+    hashed_code text,
+    state tinyint,
+    created_at timestamp,
+	updated_at timestamp,
+	expires_at timestamp,
+    primary key (user_id, id)
+);

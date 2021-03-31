@@ -23,11 +23,12 @@ type GeneratePasscodeModel struct {
 
 // GeneratePasscodeResponseModel ...
 type GeneratePasscodeResponseModel struct {
-	UserFound     bool           `json:"user_found"`
-	User          UserModel      `json:"user"`
-	UserSessions  []SessionModel `json:"user_sessions"`
-	PasscodeToken string         `json:"passcode_token"`
-	Period        uint64         `json:"period"` // period in seconds
+	UserFound     bool            `json:"user_found"`
+	ClientType    ClientTypeModel `json:"client_type"`
+	User          UserModel       `json:"user"`
+	UserSessions  []SessionModel  `json:"user_sessions"`
+	PasscodeToken string          `json:"passcode_token"`
+	Period        uint64          `json:"period"` // period in seconds
 }
 
 // ConfirmPasscodeModel ...
@@ -50,15 +51,35 @@ type SessionModel struct {
 	ExpiresAt        time.Time `json:"expires_at"`
 }
 
+// PasscodeModel ...
+type PasscodeModel struct {
+	UserID     string    `json:"user_id"`
+	ID         string    `json:"id"`
+	ConfirmBy  string    `json:"confirm_by"`
+	HashedCode string    `json:"hashed_code"`
+	State      int8      `json:"state"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	ExpiresAt  time.Time `json:"expires_at"`
+}
+
 // TokenModel ...
 type TokenModel struct {
-	AccessToken      string         `json:"access_token"`
-	RefreshToken     string         `json:"refresh_token"`
-	CreatedAt        time.Time      `json:"created_at"`
-	UpdatedAt        time.Time      `json:"updated_at"`
-	ExpiresAt        time.Time      `json:"expires_at"`
-	RefreshInSeconds int            `json:"refresh_in_seconds"`
-	UserSessions     []SessionModel `json:"user_sessions"`
+	AccessToken      string    `json:"access_token"`
+	RefreshToken     string    `json:"refresh_token"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
+	ExpiresAt        time.Time `json:"expires_at"`
+	RefreshInSeconds int       `json:"refresh_in_seconds"`
+}
+
+// LoginResponseModel ...
+type LoginResponseModel struct {
+	ClientType   ClientTypeModel `json:"client_type"`
+	UserFound    bool            `json:"user_found"`
+	User         UserModel       `json:"user"`
+	UserSessions []SessionModel  `json:"user_sessions"`
+	Token        TokenModel      `json:"passcode_token"`
 }
 
 // ClientTypeModel ...

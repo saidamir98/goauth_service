@@ -299,7 +299,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/rest.TokenModel"
+                                            "$ref": "#/definitions/rest.LoginResponseModel"
                                         }
                                     }
                                 }
@@ -515,7 +515,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/rest.TokenModel"
+                                            "$ref": "#/definitions/rest.LoginResponseModel"
                                         }
                                     }
                                 }
@@ -819,6 +819,29 @@ var doc = `{
                 }
             }
         },
+        "rest.ClientTypeModel": {
+            "type": "object",
+            "properties": {
+                "confirm_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "login_strategy": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "self_recover": {
+                    "type": "boolean"
+                },
+                "self_register": {
+                    "type": "boolean"
+                }
+            }
+        },
         "rest.ConfirmPasscodeModel": {
             "type": "object",
             "properties": {
@@ -882,6 +905,10 @@ var doc = `{
         "rest.GeneratePasscodeResponseModel": {
             "type": "object",
             "properties": {
+                "client_type": {
+                    "type": "object",
+                    "$ref": "#/definitions/rest.ClientTypeModel"
+                },
                 "passcode_token": {
                     "type": "string"
                 },
@@ -921,6 +948,32 @@ var doc = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "rest.LoginResponseModel": {
+            "type": "object",
+            "properties": {
+                "client_type": {
+                    "type": "object",
+                    "$ref": "#/definitions/rest.ClientTypeModel"
+                },
+                "passcode_token": {
+                    "type": "object",
+                    "$ref": "#/definitions/rest.TokenModel"
+                },
+                "user": {
+                    "type": "object",
+                    "$ref": "#/definitions/rest.UserModel"
+                },
+                "user_found": {
+                    "type": "boolean"
+                },
+                "user_sessions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rest.SessionModel"
+                    }
                 }
             }
         },
@@ -1051,12 +1104,6 @@ var doc = `{
                 },
                 "updated_at": {
                     "type": "string"
-                },
-                "user_sessions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/rest.SessionModel"
-                    }
                 }
             }
         },

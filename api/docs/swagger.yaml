@@ -53,6 +53,21 @@ definitions:
       url:
         type: string
     type: object
+  rest.ClientTypeModel:
+    properties:
+      confirm_by:
+        type: string
+      id:
+        type: string
+      login_strategy:
+        type: string
+      name:
+        type: string
+      self_recover:
+        type: boolean
+      self_register:
+        type: boolean
+    type: object
   rest.ConfirmPasscodeModel:
     properties:
       passcode:
@@ -94,6 +109,9 @@ definitions:
     type: object
   rest.GeneratePasscodeResponseModel:
     properties:
+      client_type:
+        $ref: '#/definitions/rest.ClientTypeModel'
+        type: object
       passcode_token:
         type: string
       period:
@@ -121,6 +139,24 @@ definitions:
         type: string
       user_id:
         type: string
+    type: object
+  rest.LoginResponseModel:
+    properties:
+      client_type:
+        $ref: '#/definitions/rest.ClientTypeModel'
+        type: object
+      passcode_token:
+        $ref: '#/definitions/rest.TokenModel'
+        type: object
+      user:
+        $ref: '#/definitions/rest.UserModel'
+        type: object
+      user_found:
+        type: boolean
+      user_sessions:
+        items:
+          $ref: '#/definitions/rest.SessionModel'
+        type: array
     type: object
   rest.RefreshTokenModel:
     properties:
@@ -206,10 +242,6 @@ definitions:
         type: string
       updated_at:
         type: string
-      user_sessions:
-        items:
-          $ref: '#/definitions/rest.SessionModel'
-        type: array
     type: object
   rest.UpdateUserModel:
     properties:
@@ -411,7 +443,7 @@ paths:
             - $ref: '#/definitions/rest.ResponseModel'
             - properties:
                 data:
-                  $ref: '#/definitions/rest.TokenModel'
+                  $ref: '#/definitions/rest.LoginResponseModel'
               type: object
         "500":
           description: Server Error
@@ -537,7 +569,7 @@ paths:
             - $ref: '#/definitions/rest.ResponseModel'
             - properties:
                 data:
-                  $ref: '#/definitions/rest.TokenModel'
+                  $ref: '#/definitions/rest.LoginResponseModel'
               type: object
         "500":
           description: Server Error

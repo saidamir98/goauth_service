@@ -24,9 +24,12 @@ func GenerateRandomString(n int) (string, error) {
 	return base64.URLEncoding.EncodeToString(b), err
 }
 
-// GenerateRandomCode returns a securely generated random string that consists of numbers
+// GenerateRandomCode returns a securely generated random string that consists of numbers that has length of 2*n
 func GenerateRandomCode(n int) (string, error) {
 	b, err := GenerateRandomBytes(n)
+	if err != nil {
+		return "", err
+	}
 
 	code := ""
 	for i := 0; i < n; i++ {
@@ -34,4 +37,20 @@ func GenerateRandomCode(n int) (string, error) {
 	}
 
 	return code, err
+}
+
+// GenerateRandomStringByPool returns a securely generated random string based on pool.
+func GenerateRandomStringByPool(n int, pool string) (string, error) {
+	l := byte(len(pool))
+
+	b, err := GenerateRandomBytes(n)
+	if err != nil {
+		return "", err
+	}
+
+	for i := 0; i < n; i++ {
+		b[i] = pool[(b[i])%l]
+	}
+
+	return string(b), nil
 }

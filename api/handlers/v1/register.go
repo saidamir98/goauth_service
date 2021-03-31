@@ -91,5 +91,7 @@ func (h *Handler) RegisterUser(c *gin.Context) {
 
 	entity.ID = userID
 
+	// clientType.ConfirmBy
+
 	h.handleSuccessResponse(c, 200, "ok", entity.ID)
 }
