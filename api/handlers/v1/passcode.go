@@ -17,7 +17,7 @@ import (
 // GeneratePasscode godoc
 // @ID generate-passcode
 // @Router /v1/auth/passcode/generate [POST]
-// @Tags auth
+// @Tags passcode
 // @Summary generate passcode
 // @Description generate passcode
 // @Accept json
@@ -88,22 +88,22 @@ func (h *Handler) GeneratePasscode(c *gin.Context) {
 	}
 
 	if user.ClientTypeID != clientType.ID {
-		h.handleSuccessResponse(c, 403, "forbidden", "mismatch between given client_type_id and user client_type_id")
+		h.handleErrorResponse(c, 403, "forbidden", "mismatch between given client_type_id and user client_type_id")
 		return
 	}
 
 	if user.Active < 0 {
-		h.handleSuccessResponse(c, 403, "forbidden", "user is not active")
+		h.handleErrorResponse(c, 403, "forbidden", "user is not active")
 		return
 	}
 
 	if user.Active == 0 {
-		h.handleSuccessResponse(c, 403, "forbidden", "user hasn't been activated")
+		h.handleErrorResponse(c, 403, "forbidden", "user hasn't been activated")
 		return
 	}
 
 	if user.ExpiresAt.Unix() < time.Now().Unix() {
-		h.handleSuccessResponse(c, 403, "forbidden", "user has been expired")
+		h.handleErrorResponse(c, 403, "forbidden", "user has been expired")
 		return
 	}
 
@@ -126,7 +126,7 @@ func (h *Handler) GeneratePasscode(c *gin.Context) {
 		}
 
 		if !match {
-			h.handleSuccessResponse(c, 401, "unauthorized", "username or password is wrong")
+			h.handleErrorResponse(c, 401, "unauthorized", "username or password is wrong")
 			return
 		}
 	case "OTP":
@@ -184,7 +184,7 @@ func (h *Handler) GeneratePasscode(c *gin.Context) {
 // ConfirmPasscode godoc
 // @ID confirm-passcode
 // @Router /v1/auth/passcode/confirm [POST]
-// @Tags auth
+// @Tags passcode
 // @Summary confirm passcode
 // @Description confirm passcode
 // @Accept json
@@ -230,17 +230,17 @@ func (h *Handler) ConfirmPasscode(c *gin.Context) {
 	}
 
 	if user.Active < 0 {
-		h.handleSuccessResponse(c, 403, "forbidden", "user is not active")
+		h.handleErrorResponse(c, 403, "forbidden", "user is not active")
 		return
 	}
 
 	if user.Active == 0 {
-		h.handleSuccessResponse(c, 403, "forbidden", "user hasn't been activated")
+		h.handleErrorResponse(c, 403, "forbidden", "user hasn't been activated")
 		return
 	}
 
 	if user.ExpiresAt.Unix() < time.Now().Unix() {
-		h.handleSuccessResponse(c, 403, "forbidden", "user has been expired")
+		h.handleErrorResponse(c, 403, "forbidden", "user has been expired")
 		return
 	}
 

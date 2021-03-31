@@ -16,7 +16,7 @@ import (
 // StandardLogin godoc
 // @ID standard-login
 // @Router /v1/auth/standard/login [POST]
-// @Tags auth
+// @Tags login
 // @Summary standard login
 // @Description standard login
 // @Accept json
@@ -82,20 +82,20 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 	}
 
 	if user.Active < 0 {
-		h.handleSuccessResponse(c, 403, "forbidden", "user is not active")
+		h.handleErrorResponse(c, 403, "forbidden", "user is not active")
 		return
 	}
 	if user.Active == 0 {
-		h.handleSuccessResponse(c, 403, "forbidden", "user hasn't been activated")
+		h.handleErrorResponse(c, 403, "forbidden", "user hasn't been activated")
 		return
 	}
 	if user.ExpiresAt.Unix() < time.Now().Unix() {
-		h.handleSuccessResponse(c, 403, "forbidden", "user has been expired")
+		h.handleErrorResponse(c, 403, "forbidden", "user has been expired")
 		return
 	}
 
 	if user.Password == "" {
-		h.handleErrorResponse(c, 401, "bad request", "user haven't set any password before")
+		h.handleErrorResponse(c, 400, "bad request", "user haven't set any password before")
 		return
 	}
 
@@ -106,7 +106,7 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 	}
 
 	if !match {
-		h.handleSuccessResponse(c, 401, "unauthorized", "username or password is wrong")
+		h.handleErrorResponse(c, 401, "unauthorized", "username or password is wrong")
 		return
 	}
 

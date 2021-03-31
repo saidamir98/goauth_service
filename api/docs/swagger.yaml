@@ -60,6 +60,27 @@ definitions:
       passcode_token:
         type: string
     type: object
+  rest.CreateUserModel:
+    properties:
+      active:
+        type: integer
+      client_type_id:
+        type: string
+      email:
+        type: string
+      expires_at:
+        type: string
+      login:
+        type: string
+      password:
+        type: string
+      phones:
+        items:
+          type: string
+        type: array
+      role_id:
+        type: string
+    type: object
   rest.GeneratePasscodeModel:
     properties:
       client_type_id:
@@ -189,6 +210,19 @@ definitions:
         items:
           $ref: '#/definitions/rest.SessionModel'
         type: array
+    type: object
+  rest.UpdateUserModel:
+    properties:
+      active:
+        type: integer
+      client_type_id:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      role_id:
+        type: string
     type: object
   rest.UserModel:
     properties:
@@ -390,7 +424,7 @@ paths:
               type: object
       summary: confirm passcode
       tags:
-      - auth
+      - passcode
   /v1/auth/passcode/generate:
     post:
       consumes:
@@ -432,7 +466,7 @@ paths:
               type: object
       summary: generate passcode
       tags:
-      - auth
+      - passcode
   /v1/auth/refresh:
     put:
       consumes:
@@ -516,7 +550,80 @@ paths:
               type: object
       summary: standard login
       tags:
-      - auth
+      - login
+  /v1/auth/user:
+    post:
+      consumes:
+      - application/json
+      description: create user
+      operationId: create-user
+      parameters:
+      - description: body
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/rest.CreateUserModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: create user
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: update user
+      operationId: update-user
+      parameters:
+      - description: body
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/rest.UpdateUserModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/rest.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: update user
+      tags:
+      - user
   /v1/auth/user/register:
     post:
       consumes:
@@ -553,5 +660,5 @@ paths:
               type: object
       summary: register user
       tags:
-      - auth
+      - register
 swagger: "2.0"

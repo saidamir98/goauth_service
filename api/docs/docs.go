@@ -265,7 +265,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "passcode"
                 ],
                 "summary": "confirm passcode",
                 "operationId": "confirm-passcode",
@@ -337,7 +337,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "passcode"
                 ],
                 "summary": "generate passcode",
                 "operationId": "generate-passcode",
@@ -481,7 +481,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "login"
                 ],
                 "summary": "standard login",
                 "operationId": "standard-login",
@@ -543,6 +543,134 @@ var doc = `{
                 }
             }
         },
+        "/v1/auth/user": {
+            "put": {
+                "description": "update user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "update user",
+                "operationId": "update-user",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.UpdateUserModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "create user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "create user",
+                "operationId": "create-user",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rest.CreateUserModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/rest.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/v1/auth/user/register": {
             "post": {
                 "description": "register user",
@@ -553,7 +681,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "register"
                 ],
                 "summary": "register user",
                 "operationId": "register-user",
@@ -698,6 +826,38 @@ var doc = `{
                     "type": "string"
                 },
                 "passcode_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "rest.CreateUserModel": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "integer"
+                },
+                "client_type_id": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phones": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "role_id": {
                     "type": "string"
                 }
             }
@@ -897,6 +1057,26 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/rest.SessionModel"
                     }
+                }
+            }
+        },
+        "rest.UpdateUserModel": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "integer"
+                },
+                "client_type_id": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "string"
                 }
             }
         },

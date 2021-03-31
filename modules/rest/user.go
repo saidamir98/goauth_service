@@ -15,18 +15,26 @@ type RegisterUserModel struct {
 	Login        string     `json:"login"`
 }
 
+// CreateUserModel ...
+type CreateUserModel struct {
+	ID           string     `json:"id" swaggerignore:"true"`
+	ClientTypeID string     `json:"client_type_id"`
+	RoleID       string     `json:"role_id"`
+	Password     string     `json:"password"`
+	Active       int8       `json:"active"`
+	ExpiresAt    *time.Time `json:"expires_at"`
+	Phones       []string   `json:"phones"`
+	Email        string     `json:"email"`
+	Login        string     `json:"login"`
+}
+
 // UpdateUserModel ...
 type UpdateUserModel struct {
 	ID           string     `json:"id"`
 	ClientTypeID string     `json:"client_type_id"`
 	RoleID       string     `json:"role_id"`
-	Active       int8       `json:"active" swaggerignore:"true"`
+	Active       int8       `json:"active"`
 	ExpiresAt    *time.Time `json:"expires_at"`
-	CreatedAt    *time.Time `json:"created_at" swaggerignore:"true"`
-	UpdatedAt    *time.Time `json:"updated_at" swaggerignore:"true"`
-	Phones       []string   `json:"phones"`
-	Email        string     `json:"email"`
-	Login        string     `json:"login"`
 }
 
 // UpdateUserPasswordModel ...

@@ -82,17 +82,17 @@ func (h *Handler) HasAccess(c *gin.Context) {
 	}
 
 	if user.Active < 0 {
-		h.handleSuccessResponse(c, 403, "forbidden", "user is not active")
+		h.handleErrorResponse(c, 403, "forbidden", "user is not active")
 		return
 	}
 
 	if user.Active == 0 {
-		h.handleSuccessResponse(c, 403, "forbidden", "user hasn't been activated")
+		h.handleErrorResponse(c, 403, "forbidden", "user hasn't been activated")
 		return
 	}
 
 	if user.ExpiresAt.Unix() < time.Now().Unix() {
-		h.handleSuccessResponse(c, 403, "forbidden", "user has been expired")
+		h.handleErrorResponse(c, 403, "forbidden", "user has been expired")
 		return
 	}
 
@@ -181,22 +181,22 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 	}
 
 	if user.Active < 0 {
-		h.handleSuccessResponse(c, 403, "forbidden", "user is not active")
+		h.handleErrorResponse(c, 403, "forbidden", "user is not active")
 		return
 	}
 
 	if user.Active == 0 {
-		h.handleSuccessResponse(c, 403, "forbidden", "user hasn't been activated")
+		h.handleErrorResponse(c, 403, "forbidden", "user hasn't been activated")
 		return
 	}
 
 	if user.ExpiresAt.Unix() < time.Now().Unix() {
-		h.handleSuccessResponse(c, 403, "forbidden", "user has been expired")
+		h.handleErrorResponse(c, 403, "forbidden", "user has been expired")
 		return
 	}
 
 	if session.ClientTypeID != user.ClientTypeID {
-		h.handleSuccessResponse(c, 403, "forbidden", "user type has been updated")
+		h.handleErrorResponse(c, 403, "forbidden", "user type has been updated")
 		return
 	}
 
