@@ -123,6 +123,14 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 		return
 	}
 
+	sessions, err := h.storageCassandra.Session().GetByUserID(user.ID)
+	if err != nil {
+		h.handleErrorResponse(c, 500, "database error", err.Error())
+		return
+	}
+
+	response.UserSessions = sessions
+
 	uuid, err := uuid.NewRandom()
 	if err != nil {
 		h.handleErrorResponse(c, 500, "server error", err.Error())
@@ -167,13 +175,6 @@ func (h *Handler) StandardLogin(c *gin.Context) {
 		return
 	}
 
-	sessions, err := h.storageCassandra.Session().GetByUserID(user.ID)
-	if err != nil {
-		h.handleErrorResponse(c, 500, "database error", err.Error())
-		return
-	}
-
-	response.UserSessions = sessions
 	response.Token = rest.TokenModel{
 		AccessToken:      accessToken,
 		RefreshToken:     refreshToken,

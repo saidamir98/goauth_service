@@ -92,6 +92,9 @@ func (h *Handler) RegisterUser(c *gin.Context) {
 	entity.ID = userID
 
 	// clientType.ConfirmBy
+	//
+	// TODO  - generate and send activation passcode and token
+	//
 
 	h.handleSuccessResponse(c, 200, "ok", entity.ID)
 }

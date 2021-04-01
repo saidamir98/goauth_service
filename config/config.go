@@ -37,6 +37,9 @@ type Config struct {
 	RabbitURI string
 
 	SecretKey string
+
+	PasscodePool   string
+	PasscodeLength int
 }
 
 // Load ...
@@ -74,6 +77,9 @@ func Load() Config {
 	config.RabbitURI = cast.ToString(getOrReturnDefaultValue("AMQP_URI", "amqp://guest:guest@localhost:5672"))
 
 	config.SecretKey = cast.ToString(getOrReturnDefaultValue("SECRET_KEY", "Here$houldBe$ome$ecretKey"))
+
+	config.PasscodePool = cast.ToString(getOrReturnDefaultValue("PASSCODE_POOL", "0123456789"))
+	config.PasscodeLength = cast.ToInt(getOrReturnDefaultValue("PASSCODE_LENGTH", "8"))
 
 	return config
 }
