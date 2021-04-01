@@ -48,7 +48,7 @@ func (h *Handler) HasAccess(c *gin.Context) {
 		return
 	}
 
-	claims, err := security.ExtractClaims(entity.Token, h.cfg.SecretKey)
+	claims, err := security.ExtractClaims(entity.AccessToken, h.cfg.SecretKey)
 	if err != nil {
 		h.handleErrorResponse(c, 401, "token error", err.Error())
 		return
@@ -146,7 +146,7 @@ func (h *Handler) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	claims, err := security.ExtractClaims(entity.Token, h.cfg.SecretKey)
+	claims, err := security.ExtractClaims(entity.RefreshToken, h.cfg.SecretKey)
 	if err != nil {
 		h.handleErrorResponse(c, 401, "token error", err.Error())
 		return

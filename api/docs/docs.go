@@ -779,6 +779,12 @@ var doc = `{
                     "description": "debug, info, warn, error, dpanic, panic, fatal",
                     "type": "string"
                 },
+                "passcodeLength": {
+                    "type": "integer"
+                },
+                "passcodePool": {
+                    "type": "string"
+                },
                 "postgresDatabase": {
                     "type": "string"
                 },
@@ -808,10 +814,10 @@ var doc = `{
         "rest.AccessModel": {
             "type": "object",
             "properties": {
-                "method": {
+                "access_token": {
                     "type": "string"
                 },
-                "token": {
+                "method": {
                     "type": "string"
                 },
                 "url": {
@@ -958,7 +964,7 @@ var doc = `{
                     "type": "object",
                     "$ref": "#/definitions/rest.ClientTypeModel"
                 },
-                "passcode_token": {
+                "token": {
                     "type": "object",
                     "$ref": "#/definitions/rest.TokenModel"
                 },
@@ -980,10 +986,10 @@ var doc = `{
         "rest.RefreshTokenModel": {
             "type": "object",
             "required": [
-                "token"
+                "refresh_token"
             ],
             "properties": {
-                "token": {
+                "refresh_token": {
                     "type": "string"
                 }
             }

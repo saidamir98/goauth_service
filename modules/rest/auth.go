@@ -79,7 +79,7 @@ type LoginResponseModel struct {
 	UserFound    bool            `json:"user_found"`
 	User         UserModel       `json:"user"`
 	UserSessions []SessionModel  `json:"user_sessions"`
-	Token        TokenModel      `json:"passcode_token"`
+	Token        TokenModel      `json:"token"`
 }
 
 // ClientTypeModel ...
@@ -94,9 +94,9 @@ type ClientTypeModel struct {
 
 // AccessModel ...
 type AccessModel struct {
-	Token  string `json:"token"`
-	Method string `json:"method"`
-	URL    string `json:"url"`
+	AccessToken string `json:"access_token"`
+	Method      string `json:"method"`
+	URL         string `json:"url"`
 }
 
 // HasAccessModel ...
@@ -110,5 +110,5 @@ type HasAccessModel struct {
 
 // RefreshTokenModel ...
 type RefreshTokenModel struct {
-	Token string `json:"token" validate:"required"`
+	RefreshToken string `json:"refresh_token" validate:"required"`
 }

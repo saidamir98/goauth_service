@@ -36,6 +36,21 @@ func (h *Handler) RegisterUser(c *gin.Context) {
 		return
 	}
 
+	clientType, err := h.storageCassandra.ClientType().GetByID(entity.ClientTypeID)
+	if err != nil {
+		h.handleErrorResponse(c, 500, "database error", err.Error())
+		return
+	}
+
+	//
+	// TODO - validate entity by clientType rule
+	//
+
+	if !clientType.SelfRegister {
+		h.handleErrorResponse(c, 400, "bad request", "this client type cannot self register")
+		return
+	}
+
 	if !util.IsValidUUID(entity.RoleID) {
 		h.handleErrorResponse(c, 422, "validation error", "role_id")
 		return
@@ -60,17 +75,6 @@ func (h *Handler) RegisterUser(c *gin.Context) {
 
 	if len(entity.Password) < 6 {
 		h.handleErrorResponse(c, 422, "validation error", "password")
-		return
-	}
-
-	clientType, err := h.storageCassandra.ClientType().GetByID(entity.ClientTypeID)
-	if err != nil {
-		h.handleErrorResponse(c, 500, "database error", err.Error())
-		return
-	}
-
-	if !clientType.SelfRegister {
-		h.handleErrorResponse(c, 400, "bad request", "this client type cannot self register")
 		return
 	}
 

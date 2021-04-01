@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/saidamir98/goauth_service/modules/rest"
 	"github.com/saidamir98/goauth_service/pkg/security"
@@ -35,6 +37,17 @@ func (h *Handler) CreateUser(c *gin.Context) {
 		h.handleErrorResponse(c, 422, "validation error", "client_type_id")
 		return
 	}
+
+	clientType, err := h.storageCassandra.ClientType().GetByID(entity.ClientTypeID)
+	if err != nil {
+		h.handleErrorResponse(c, 500, "database error", err.Error())
+		return
+	}
+
+	fmt.Println(clientType)
+	//
+	// TODO - validate entity by clientType rule
+	//
 
 	if !util.IsValidUUID(entity.RoleID) {
 		h.handleErrorResponse(c, 422, "validation error", "role_id")
