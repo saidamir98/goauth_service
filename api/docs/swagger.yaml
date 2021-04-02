@@ -22,6 +22,8 @@ definitions:
       environment:
         description: development, staging, production
         type: string
+      httphost:
+        type: string
       httpport:
         type: string
       logLevel:
@@ -46,6 +48,10 @@ definitions:
       secretKey:
         type: string
       serviceHost:
+        type: string
+      servicePort:
+        type: string
+      serviceScheme:
         type: string
     type: object
   rest.AccessModel:

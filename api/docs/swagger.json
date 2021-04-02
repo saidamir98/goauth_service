@@ -755,6 +755,9 @@
                     "description": "development, staging, production",
                     "type": "string"
                 },
+                "httphost": {
+                    "type": "string"
+                },
                 "httpport": {
                     "type": "string"
                 },
@@ -790,6 +793,12 @@
                     "type": "string"
                 },
                 "serviceHost": {
+                    "type": "string"
+                },
+                "servicePort": {
+                    "type": "string"
+                },
+                "serviceScheme": {
                     "type": "string"
                 }
             }

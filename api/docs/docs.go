@@ -772,6 +772,9 @@ var doc = `{
                     "description": "development, staging, production",
                     "type": "string"
                 },
+                "httphost": {
+                    "type": "string"
+                },
                 "httpport": {
                     "type": "string"
                 },
@@ -807,6 +810,12 @@ var doc = `{
                     "type": "string"
                 },
                 "serviceHost": {
+                    "type": "string"
+                },
+                "servicePort": {
+                    "type": "string"
+                },
+                "serviceScheme": {
                     "type": "string"
                 }
             }

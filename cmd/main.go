@@ -12,9 +12,9 @@ func main() {
 
 	log := logger.New(cfg.App, cfg.LogLevel)
 
-	docs.SwaggerInfo.Host = cfg.ServiceHost + cfg.HTTPPort
+	docs.SwaggerInfo.Host = cfg.ServiceHost + cfg.ServicePort
 	// docs.SwaggerInfo.BasePath = cfg.BasePath
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+	docs.SwaggerInfo.Schemes = []string{cfg.ServiceScheme}
 
 	apiServer, err := api.New(cfg, log)
 	if err != nil {

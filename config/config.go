@@ -14,10 +14,16 @@ type Config struct {
 
 	Environment string // development, staging, production
 
-	LogLevel    string // debug, info, warn, error, dpanic, panic, fatal
-	ServiceHost string
-	HTTPPort    string
-	BasePath    string
+	LogLevel string // debug, info, warn, error, dpanic, panic, fatal
+
+	ServiceScheme string
+	ServiceHost   string
+	ServicePort   string
+
+	HTTPHost string
+	HTTPPort string
+
+	BasePath string
 
 	DefaultOffset string
 	DefaultLimit  string
@@ -55,8 +61,14 @@ func Load() Config {
 	config.Environment = cast.ToString(getOrReturnDefaultValue("ENVIRONMENT", "development"))
 
 	config.LogLevel = cast.ToString(getOrReturnDefaultValue("LOG_LEVEL", "debug"))
+
+	config.ServiceScheme = cast.ToString(getOrReturnDefaultValue("SERVICE_SCHEME", "http"))
 	config.ServiceHost = cast.ToString(getOrReturnDefaultValue("SERVICE_HOST", "localhost"))
+	config.ServicePort = cast.ToString(getOrReturnDefaultValue("SERVICE_PORT", ":7071"))
+
+	config.HTTPHost = cast.ToString(getOrReturnDefaultValue("HTTP_HOST", "localhost"))
 	config.HTTPPort = cast.ToString(getOrReturnDefaultValue("HTTP_PORT", ":7071"))
+
 	config.BasePath = cast.ToString(getOrReturnDefaultValue("BASE_PATH", "/v1"))
 
 	config.DefaultOffset = cast.ToString(getOrReturnDefaultValue("DEFAULT_OFFSET", "0"))
